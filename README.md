@@ -60,14 +60,14 @@ ExpensAI is a full-stack expense management platform with AI-powered insights, f
 
 ```bash
 # Clone repository
-git clone https://github.com/your-org/expensiai.git
-cd expensiai
+git clone https://github.com/your-org/expenseai.git
+cd expenseai
 ```
 
 ### Backend Setup
 
 ```bash
-cd expensiai-backend
+cd expenseai-backend
 pnpm install
 
 # Configure environment
@@ -85,7 +85,7 @@ pnpm dev
 ### Frontend Setup
 
 ```bash
-cd expensiai-frontend
+cd expenseai-frontend
 pnpm install
 pnpm dev
 ```
@@ -103,7 +103,7 @@ PORT=3000
 JWT_SECRET=your_jwt_secret
 
 # Database
-DATABASE_URL="postgresql://user:password@localhost:5432/expensiai"
+DATABASE_URL="postgresql://user:password@localhost:5432/expenseai"
 
 # AI Services
 DEEPSEEK_R1_API_KEY=your_api_key
