@@ -63,7 +63,8 @@ export function Navbar() {
       transition={{ type: "spring", stiffness: 200, damping: 20 }}
     >
       <div className="container mx-auto px-4 h-full flex items-center justify-between">
-        <motion.div
+        <motion.a
+          href="/"
           className="flex items-center gap-3"
           whileHover={{ scale: 1.02 }}
           transition={{ type: "spring", stiffness: 400, damping: 10 }}
@@ -72,7 +73,7 @@ export function Navbar() {
           <span className="text-lg font-medium tracking-tight bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
             ExpenseAI
           </span>
-        </motion.div>
+        </motion.a>
 
         {/* Desktop Navigation */}
         <div className="hidden md:flex items-center gap-6">
