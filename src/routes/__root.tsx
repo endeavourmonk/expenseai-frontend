@@ -3,6 +3,8 @@ import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 import { ThemeProvider } from "../components/theme-provider";
 import { Navbar } from "@/components/Navbar";
 import { useAuthStore } from "@/stores/authStore";
+import { queryClient } from "@/lib/tanstackQuery";
+import { getUserFn } from "@/lib/apis/user";
 
 const RootComponent = () => {
   return (
@@ -20,16 +22,13 @@ export const Route = createRootRoute({
   component: RootComponent,
   beforeLoad: async ({ location }) => {
     const { user } = useAuthStore.getState();
+
     if (!user) {
       try {
-        const res = await fetch("http://localhost:8000/api/v1/auth/me", {
-          method: "GET",
-          credentials: "include",
+        const user = await queryClient.fetchQuery({
+          queryKey: ["auth", "currentUser"],
+          queryFn: () => getUserFn(),
         });
-
-        if (!res.ok) throw new Error("Not authenticated");
-
-        const { user } = await res.json();
         useAuthStore.getState().setUser(user);
       } catch (error) {
         console.log("error", error);

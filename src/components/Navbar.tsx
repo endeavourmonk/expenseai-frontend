@@ -46,7 +46,14 @@ export function Navbar() {
     return () => window.removeEventListener("resize", handleResize);
   }, [isMenuOpen]);
 
-  const navItems = ["Features", "Stats", "Pricing", "About", "Contact"];
+  const navItems = [
+    "Features",
+    "Stats",
+    "Pricing",
+    "About",
+    "Contact",
+    "_Dashboard",
+  ];
 
   return (
     <motion.nav
@@ -81,12 +88,16 @@ export function Navbar() {
             {navItems.map((item) => (
               <motion.a
                 key={item}
-                href={`#${item.toLowerCase()}`}
+                href={
+                  item.startsWith("_")
+                    ? `${item.toLowerCase().slice(1)}`
+                    : `#${item.toLowerCase()}`
+                }
                 className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors relative group"
                 whileHover={{ y: -1 }}
                 transition={{ type: "spring", stiffness: 400, damping: 17 }}
               >
-                {item}
+                {item.startsWith("_") ? item.slice(1) : item}
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full"></span>
               </motion.a>
             ))}
@@ -143,7 +154,11 @@ export function Navbar() {
                 {navItems.map((item, index) => (
                   <motion.a
                     key={item}
-                    href={`#${item.toLowerCase()}`}
+                    href={
+                      item.startsWith("_")
+                        ? `${item.toLowerCase().slice(1)}`
+                        : `#${item.toLowerCase()}`
+                    }
                     className="text-xl py-3 font-medium text-muted-foreground hover:text-primary transition-colors flex items-center"
                     initial={{ opacity: 0, x: -10 }}
                     animate={{ opacity: 1, x: 0 }}
@@ -151,7 +166,7 @@ export function Navbar() {
                     whileHover={{ x: 5 }}
                     onClick={() => setIsMenuOpen(false)}
                   >
-                    {item}
+                    {item.startsWith("_") ? item.slice(1) : item}
                   </motion.a>
                 ))}
                 <motion.div
