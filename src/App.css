@@ -2,11 +2,16 @@
   margin: 0 auto;
   text-align: center;
   max-width: none;
+  min-height: 100%;
   padding: 0;
 }
 
-html {
+html,
+body {
   scrollbar-gutter: stable;
+  scrollbar-width: thin;
+  height: 100%;
+  margin: 0;
 }
 
 .logo {

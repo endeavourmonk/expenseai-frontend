@@ -9,9 +9,11 @@ import { getUserFn } from "@/lib/apis/user";
 const RootComponent = () => {
   return (
     <ThemeProvider>
-      <Navbar />
-      <div className="pt-20">
-        <Outlet />
+      <div className="flex flex-col min-h-screen w-full max-w-[100vw] overflow-x-hidden">
+        <Navbar />
+        <div className="pt-20">
+          <Outlet />
+        </div>
       </div>
       <TanStackRouterDevtools />
     </ThemeProvider>

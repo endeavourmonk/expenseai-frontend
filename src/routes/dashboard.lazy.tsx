@@ -1,3 +1,4 @@
+import { Category } from "@/components/forms/Category";
 import DashboardPage from "@/pages/DashboardPage";
 import { createLazyFileRoute } from "@tanstack/react-router";
 
@@ -6,5 +7,6 @@ export const Route = createLazyFileRoute("/dashboard")({
 });
 
 function RouteComponent() {
-  return <DashboardPage />;
+  // return <DashboardPage />;
+  return <Category />;
 }
