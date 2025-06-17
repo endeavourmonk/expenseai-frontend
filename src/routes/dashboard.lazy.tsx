@@ -1,5 +1,5 @@
-import { Category } from "@/components/forms/Category";
-import DashboardPage from "@/pages/DashboardPage";
+import TransactionForm from "@/components/forms/TransactionForm";
+// import DashboardPage from "@/pages/DashboardPage";
 import { createLazyFileRoute } from "@tanstack/react-router";
 
 export const Route = createLazyFileRoute("/dashboard")({
@@ -8,5 +8,9 @@ export const Route = createLazyFileRoute("/dashboard")({
 
 function RouteComponent() {
   // return <DashboardPage />;
-  return <Category />;
+  return (
+    <div className="space-y-6">
+      <TransactionForm />
+    </div>
+  );
 }
