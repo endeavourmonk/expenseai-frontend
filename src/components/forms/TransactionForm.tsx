@@ -6,7 +6,6 @@ import { useForm } from "react-hook-form";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -26,8 +25,10 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { DatePicker } from "../DatePicker";
+import TransactionToggle from "../TransactionToggle";
 
 export const TransactionFormSchema = z.object({
+  transactionType: z.enum(["expense", "income"]),
   name: z.string().min(1, "Name is required"),
   amount: z.coerce.number({
     required_error: "Amount is required",
@@ -45,6 +46,7 @@ export default function TransactionForm() {
   const form = useForm<z.infer<typeof TransactionFormSchema>>({
     resolver: zodResolver(TransactionFormSchema),
     defaultValues: {
+      transactionType: "income",
       name: "",
       amount: undefined,
       description: "",
@@ -54,10 +56,14 @@ export default function TransactionForm() {
     },
   });
 
+  const watchedTransactionType = form.watch("transactionType");
+
   const createTransaction = (data: z.infer<typeof TransactionFormSchema>) => {
     console.log(data);
     setDialogOpen(false); // close dialog on submit
   };
+
+  console.log("formstate ", form.formState);
 
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
@@ -80,6 +86,24 @@ export default function TransactionForm() {
             onSubmit={form.handleSubmit(createTransaction)}
             className="space-y-6"
           >
+            {/* Transaction Type Toggle */}
+            <FormField
+              control={form.control}
+              name="transactionType"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Transaction Type</FormLabel>
+                  <FormControl>
+                    <TransactionToggle
+                      value={field.value as string}
+                      onValueChange={field.onChange}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
             {/* TransactionName */}
             <FormField
               control={form.control}
@@ -88,7 +112,14 @@ export default function TransactionForm() {
                 <FormItem>
                   <FormLabel>name</FormLabel>
                   <FormControl>
-                    <Input placeholder="name of transaction" {...field} />
+                    <Input
+                      placeholder={
+                        watchedTransactionType === "income"
+                          ? "e.g. Salary, Freelance payment"
+                          : "e.g. Grocery store, Gas station"
+                      }
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -103,7 +134,14 @@ export default function TransactionForm() {
                 <FormItem>
                   <FormLabel>Description</FormLabel>
                   <FormControl>
-                    <Input placeholder="e.g. Grocery shopping" {...field} />
+                    <Input
+                      placeholder={
+                        watchedTransactionType === "income"
+                          ? "e.g. Monthly salary payment"
+                          : "e.g. Weekly grocery shopping"
+                      }
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -129,6 +167,26 @@ export default function TransactionForm() {
                 </FormItem>
               )}
             />
+
+            {/* Income Source - Only show when transaction type is income */}
+            {watchedTransactionType === "income" && (
+              <FormField
+                control={form.control}
+                name="source"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Source</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="e.g. Company name, Client name, Investment"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
 
             {/* Transaction Date */}
             <FormField
@@ -160,7 +218,7 @@ export default function TransactionForm() {
               </DialogClose>
 
               <Button type="submit" className="cursor-pointer">
-                Save
+                Save {watchedTransactionType}
               </Button>
             </div>
           </form>
