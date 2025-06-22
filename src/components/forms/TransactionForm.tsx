@@ -26,6 +26,8 @@ import { Button } from "@/components/ui/button";
 import { DatePicker } from "../DatePicker";
 import TransactionToggle from "../TransactionToggle";
 
+import { useAuthStore } from "@/stores/authStore";
+
 import { queryClient } from "@/lib/tanstackQuery";
 import { createExpense } from "@/api/expense";
 import { createIncome } from "@/api/income";
@@ -34,7 +36,6 @@ import {
   TrendingUp,
   Receipt,
   FileText,
-  DollarSign,
   Building2,
   Calendar,
 } from "lucide-react";
@@ -58,7 +59,7 @@ export default function TransactionForm() {
   const form = useForm<z.infer<typeof TransactionFormSchema>>({
     resolver: zodResolver(TransactionFormSchema),
     defaultValues: {
-      transactionType: "income",
+      transactionType: "expense",
       name: "",
       amount: undefined,
       description: "",
@@ -79,7 +80,7 @@ export default function TransactionForm() {
     },
     onError: () => {
       toast.error(
-        `😕 Whoops! We couldn’t record your ${watchedTransactionType}. Give it another go?`
+        `😕 Whoops! We couldn't record your ${watchedTransactionType}. Give it another go?`
       );
     },
   });
@@ -90,7 +91,7 @@ export default function TransactionForm() {
       description: data.description ?? "",
     };
     mutation.mutate(payload);
-    setDialogOpen(false); // close dialog on submit
+    setDialogOpen(false);
   };
 
   return (
@@ -157,19 +158,25 @@ export default function TransactionForm() {
               )}
             />
 
-            {/* TransactionName */}
+            {/* Transaction Name */}
             <FormField
               control={form.control}
               name="name"
               render={({ field }) => (
-                <FormItem>
-                  <FormLabel>What is this for?</FormLabel>
+                <FormItem className="space-y-3">
+                  <div className="flex items-center gap-2">
+                    <Receipt className="w-4 h-4 text-muted-foreground" />
+                    <FormLabel className="text-sm font-medium text-foreground leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                      Transaction Details
+                    </FormLabel>
+                  </div>
                   <FormControl>
                     <Input
+                      className="border-0 border-b border-border/30 rounded-none bg-transparent focus:border-primary focus:outline-none focus:ring-0 transition-colors px-0 pb-2"
                       placeholder={
                         watchedTransactionType === "income"
-                          ? "e.g. Salary, Freelance payment"
-                          : "e.g. Grocery, Gas station"
+                          ? "Salary, freelance payment, dividend..."
+                          : "Grocery shopping, gas station, coffee..."
                       }
                       {...field}
                     />
@@ -184,14 +191,23 @@ export default function TransactionForm() {
               control={form.control}
               name="description"
               render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Notes (optional)</FormLabel>
+                <FormItem className="space-y-3">
+                  <div className="flex items-center gap-2">
+                    <FileText className="w-4 h-4 text-muted-foreground" />
+                    <FormLabel className="text-sm font-medium text-foreground leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                      Additional Notes
+                      <span className="text-xs text-muted-foreground ml-1 font-normal">
+                        (optional)
+                      </span>
+                    </FormLabel>
+                  </div>
                   <FormControl>
                     <Input
+                      className="border-0 border-b border-border/30 rounded-none bg-transparent focus:border-primary focus:outline-none focus:ring-0 transition-colors px-0 pb-2"
                       placeholder={
                         watchedTransactionType === "income"
-                          ? "e.g. Monthly salary payment"
-                          : "e.g. Weekly grocery shopping"
+                          ? "Monthly salary, Q4 bonus, client project..."
+                          : "Weekly groceries, emergency repair, gift..."
                       }
                       {...field}
                     />
@@ -206,15 +222,31 @@ export default function TransactionForm() {
               control={form.control}
               name="amount"
               render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Amount</FormLabel>
+                <FormItem className="space-y-3">
+                  <div className="flex items-center gap-2">
+                    <span className="text-muted-foreground">
+                      {useAuthStore.getState()?.user?.defaultCurrency.symbol}
+                    </span>
+                    <FormLabel className="text-sm font-medium text-foreground leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                      Amount
+                      <span className="text-xs text-muted-foreground ml-1 font-normal">
+                        ({useAuthStore.getState()?.user?.defaultCurrency.code})
+                      </span>
+                    </FormLabel>
+                  </div>
                   <FormControl>
-                    <Input
-                      type="number"
-                      step="0.01"
-                      placeholder="0.00"
-                      {...field}
-                    />
+                    <div className="relative">
+                      <Input
+                        type="number"
+                        step="0.01"
+                        className="border-0 border-b border-border/30 rounded-none bg-transparent focus:border-primary focus:outline-none focus:ring-0 transition-colors pl-8 pb-2"
+                        placeholder="0.00"
+                        {...field}
+                      />
+                      <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+                        $
+                      </div>
+                    </div>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -227,11 +259,20 @@ export default function TransactionForm() {
                 control={form.control}
                 name="source"
                 render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Received from</FormLabel>
+                  <FormItem className="space-y-3">
+                    <div className="flex items-center gap-2">
+                      <Building2 className="w-4 h-4 text-muted-foreground" />
+                      <FormLabel className="text-sm font-medium text-foreground leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                        Income Source
+                        <span className="text-xs text-muted-foreground ml-1 font-normal">
+                          (optional)
+                        </span>
+                      </FormLabel>
+                    </div>
                     <FormControl>
                       <Input
-                        placeholder="e.g. Company name, Client name, Investment"
+                        className="border-0 border-b border-border/30 rounded-none bg-transparent focus:border-primary focus:outline-none focus:ring-0 transition-colors px-0 pb-2"
+                        placeholder="Company name, client, investment platform..."
                         {...field}
                       />
                     </FormControl>
@@ -246,13 +287,17 @@ export default function TransactionForm() {
               control={form.control}
               name="date"
               render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Choose a date</FormLabel>
+                <FormItem className="space-y-3">
+                  <div className="flex items-center gap-2">
+                    <Calendar className="w-4 h-4 text-muted-foreground" />
+                    <FormLabel className="text-sm font-medium text-foreground leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                      Transaction Date
+                    </FormLabel>
+                  </div>
                   <FormControl>
                     <DatePicker
                       value={field.value}
                       onSelect={(date) => {
-                        // Handle both selection and deselection
                         field.onChange(date || null);
                       }}
                     />
@@ -262,16 +307,21 @@ export default function TransactionForm() {
               )}
             />
 
-            <div className="flex justify-end space-x-2">
-              {/* Cancel button that closes the dialog */}
+            <div className="flex justify-end space-x-2 pt-4 border-t border-border/50">
               <DialogClose asChild>
                 <Button variant="outline" className="cursor-pointer">
                   Cancel
                 </Button>
               </DialogClose>
 
-              <Button type="submit" className="cursor-pointer">
-                Log {watchedTransactionType}
+              <Button
+                type="submit"
+                className="cursor-pointer"
+                disabled={mutation.isPending}
+              >
+                {mutation.isPending
+                  ? "Saving..."
+                  : `Log ${watchedTransactionType}`}
               </Button>
             </div>
           </form>
