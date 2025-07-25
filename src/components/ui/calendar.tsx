@@ -1,9 +1,11 @@
 import * as React from "react";
+
 import {
   ChevronDownIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
 } from "lucide-react";
+
 import { DayButton, DayPicker, getDefaultClassNames } from "react-day-picker";
 
 import { cn } from "@/lib/utils";
@@ -68,7 +70,7 @@ function Calendar({
           defaultClassNames.dropdowns
         ),
         dropdown_root: cn(
-          "relative has-focus:border-ring border border-input shadow-xs has-focus:ring-ring/50 has-focus:ring-[3px] rounded-md",
+          "relative has-focus:border-ring border border-input shadow-xs has-focus:ring-ring/50 has-focus:ring-[3px] rounded-md [&>select]:bg-background [&>select]:text-foreground [&>select]:border-none [&>select]:outline-none [&>select]:appearance-none [&>select]:w-full [&>select]:h-full [&>select]:px-2 [&>select]:py-1 [&>select]:rounded-[inherit] dark:[&>select]:bg-popover dark:[&>select]:text-popover-foreground",
           defaultClassNames.dropdown_root
         ),
         dropdown: cn("absolute inset-0 opacity-0", defaultClassNames.dropdown),

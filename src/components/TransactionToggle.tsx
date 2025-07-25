@@ -8,13 +8,20 @@ export default function TransactionToggle({
   onValueChange,
 }: TransactionToggleProps) {
   return (
-    <div className="flex rounded-lg border border-input bg-background p-1">
+    <div className="relative flex rounded-lg border border-input bg-background p-1">
+      {/* Animated background indicator */}
+      <div
+        className={`absolute top-1 bottom-1 w-[calc(50%-2px)] rounded-md bg-primary shadow-sm transition-all duration-300 ease-out ${
+          value === "income" ? "translate-x-[calc(100%+4px)]" : "translate-x-0"
+        }`}
+      />
+
       <button
         type="button"
         onClick={() => onValueChange("expense")}
-        className={`flex-1 rounded-md px-6 py-3 text-sm font-medium transition-all ${
+        className={`relative z-10 flex-1 rounded-md px-6 py-3 text-sm font-medium transition-all duration-300 cursor-pointer ${
           value === "expense"
-            ? "bg-primary text-primary-foreground shadow-sm"
+            ? "text-primary-foreground"
             : "text-muted-foreground hover:text-foreground"
         }`}
       >
@@ -23,9 +30,9 @@ export default function TransactionToggle({
       <button
         type="button"
         onClick={() => onValueChange("income")}
-        className={`flex-1 rounded-md px-6 py-3 text-sm font-medium transition-all ${
+        className={`relative z-10 flex-1 rounded-md px-6 py-3 text-sm font-medium transition-all duration-300 cursor-pointer ${
           value === "income"
-            ? "bg-primary text-primary-foreground shadow-sm"
+            ? "text-primary-foreground"
             : "text-muted-foreground hover:text-foreground"
         }`}
       >
