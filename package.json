@@ -6,6 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "preinstall": "cd shared && npm install",
+    "postinstall": "cd shared && npm run build",
     "lint": "eslint .",
     "preview": "vite preview"
   },
@@ -22,6 +24,7 @@
     "@tanstack/react-query": "^5.76.0",
     "@tanstack/react-router": "^1.120.3",
     "@tanstack/react-router-devtools": "^1.120.3",
+    "@expenseai/expenseai-shared": "file:./shared",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cookie": "^1.0.2",
@@ -38,7 +41,7 @@
     "tailwind-merge": "^3.0.2",
     "tailwindcss": "^4.0.15",
     "tw-animate-css": "^1.2.4",
-    "zod": "^3.25.64",
+    "zod": "^4.0.8",
     "zustand": "^5.0.4"
   },
   "devDependencies": {
