@@ -58,7 +58,7 @@ export function Navbar() {
   return (
     <motion.nav
       className={cn(
-        "fixed w-full top-0 z-50 transition-all duration-300",
+        "fixed w-screen top-0 z-50 transition-all duration-300",
         isScrolled
           ? "h-16 bg-background/95 backdrop-blur-md shadow-sm"
           : "h-20 bg-transparent backdrop-blur-sm"
