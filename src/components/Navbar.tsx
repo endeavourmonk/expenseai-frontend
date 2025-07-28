@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 import { ModeToggle } from "./mode-toggle";
 import { Menu, X } from "lucide-react";
 
-export function Navbar() {
+export const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [lastScrollY, setLastScrollY] = useState(0);
   const [isVisible, setIsVisible] = useState(true);
@@ -199,4 +199,4 @@ export function Navbar() {
       </AnimatePresence>
     </motion.nav>
   );
-}
+};

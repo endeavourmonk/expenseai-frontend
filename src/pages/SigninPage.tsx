@@ -65,7 +65,7 @@ const SignInPage = () => {
           {/* Google Sign In */}
           <button
             onClick={handleGoogleSignIn}
-            className="w-full py-4 px-6 bg-background hover:bg-accent border border-input rounded-xl transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center space-x-3 shadow-sm hover:shadow-md"
+            className="cursor-pointer w-full py-4 px-6 bg-background hover:bg-accent border border-input rounded-xl transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center space-x-3 shadow-sm hover:shadow-md"
           >
             <svg className="w-6 h-6" viewBox="0 0 24 24">
               <path
