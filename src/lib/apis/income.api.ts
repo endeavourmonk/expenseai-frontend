@@ -1,5 +1,8 @@
-import dayjs from "dayjs";
-import { CreateIncomeDTO, UpdateIncomeDTO } from "shared/dist";
+import {
+  CreateIncomeDTO,
+  UpdateIncomeDTO,
+  toUtcMidnightISOString,
+} from "@expenseai/expenseai-shared";
 import { SERVER_URL } from "../constants";
 
 export const getIncomeFn = async () => {
@@ -15,7 +18,7 @@ export const getIncomeFn = async () => {
 export const createIncomeFn = async (data: CreateIncomeDTO) => {
   const payload = {
     ...data,
-    date: dayjs(data.date).format("YYYY-MM-DDTHH:mm:ssZ"),
+    date: toUtcMidnightISOString(data.date),
   };
 
   const response = await fetch(`${SERVER_URL}/incomes`, {
@@ -32,7 +35,7 @@ export const createIncomeFn = async (data: CreateIncomeDTO) => {
 export const updateIncomeFn = async (id: string, data: UpdateIncomeDTO) => {
   const payload = {
     ...data,
-    ...(data.date && { date: dayjs(data.date).format("YYYY-MM-DDTHH:mm:ssZ") }),
+    ...(data.date && { date: toUtcMidnightISOString(data.date) }),
   };
 
   const response = await fetch(`/api/incomes/${id}`, {

@@ -1,5 +1,9 @@
-import dayjs from "dayjs";
-import { CreateExpenseDTO, UpdateExpenseDTO } from "shared/dist";
+import {
+  CreateExpenseDTO,
+  toUtcMidnightISOString,
+  UpdateExpenseDTO,
+} from "@expenseai/expenseai-shared";
+
 import { SERVER_URL } from "../constants";
 
 export const getExpenseFn = async () => {
@@ -15,16 +19,17 @@ export const getExpenseFn = async () => {
 export const createExpenseFn = async (data: CreateExpenseDTO) => {
   const payload = {
     ...data,
-    date:
-      data.date instanceof Date
-        ? new Date(
-            Date.UTC(
-              data.date.getFullYear(),
-              data.date.getMonth(),
-              data.date.getDate()
-            )
-          ).toISOString()
-        : data.date,
+    date: toUtcMidnightISOString(data.date),
+    // date:
+    //   data.date instanceof Date
+    //     ? new Date(
+    //         Date.UTC(
+    //           data.date.getFullYear(),
+    //           data.date.getMonth(),
+    //           data.date.getDate()
+    //         )
+    //       ).toISOString()
+    //     : data.date,
   };
 
   console.log("data ------>", payload);
@@ -44,7 +49,7 @@ export const createExpenseFn = async (data: CreateExpenseDTO) => {
 export const updateExpenseFn = async (id: string, data: UpdateExpenseDTO) => {
   const payload = {
     ...data,
-    ...(data.date && { date: dayjs(data.date).format("YYYY-MM-DDTHH:mm:ssZ") }),
+    ...(data.date && { date: toUtcMidnightISOString(data.date) }),
   };
 
   const response = await fetch(`/api/expenses/${id}`, {
