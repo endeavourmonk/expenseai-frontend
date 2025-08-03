@@ -8,7 +8,7 @@
     "build": "tsc -b && vite build",
     "preinstall": "cd shared && npm install",
     "postinstall": "cd shared && npm run build",
-    "update-submodule-shared": "git submodule update --remote shared",
+    "update:shared": "git submodule update --remote --force shared && git add shared && git commit -m \"Update shared submodule to latest\"",
     "lint": "eslint .",
     "preview": "vite preview"
   },
