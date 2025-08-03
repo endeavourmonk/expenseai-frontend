@@ -1,16 +1,26 @@
 import {
+  BaseTransactionParams,
   CreateIncomeDTO,
   UpdateIncomeDTO,
   toUtcMidnightISOString,
 } from "@expenseai/expenseai-shared";
 import { SERVER_URL } from "../constants";
 
-export const getIncomeFn = async () => {
-  const response = await fetch(`${SERVER_URL}/incomes`, {
-    method: "GET",
-    credentials: "include",
-    headers: { "Content-Type": "application/json" },
-  });
+export const getIncomeFn = async ({
+  startDate,
+  endDate,
+  limit = 1000,
+}: BaseTransactionParams) => {
+  console.log("params getIncomeeFn ------>", startDate, endDate, limit);
+
+  const response = await fetch(
+    `${SERVER_URL}/incomes?startDate=${startDate}&endDate=${endDate}&limit=${limit}`,
+    {
+      method: "GET",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+    }
+  );
   if (!response.ok) throw new Error("Failed to fetch incomes");
   return response.json();
 };
