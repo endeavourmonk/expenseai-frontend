@@ -38,11 +38,13 @@ import {
   Building2,
   Calendar,
   PlusCircle,
+  Tag,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { buttonVariants } from "../dashboard/variants";
 import { createExpenseFn } from "@/lib/apis/expense.api";
 import { createIncomeFn } from "@/lib/apis/income.api";
+import { CategorySelector } from "./CategorySelector";
 
 export const TransactionFormSchema = z.object({
   transactionType: z.enum(["expense", "income"]),
@@ -328,6 +330,34 @@ export default function TransactionForm() {
                         value={field.value}
                         onSelect={(date) => {
                           field.onChange(date || null);
+                        }}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {/* Category Selector */}
+              <FormField
+                control={form.control}
+                name="categoryIds"
+                render={({ field }) => (
+                  <FormItem className="space-y-3">
+                    <div className="flex items-center gap-2">
+                      <Tag className="w-4 h-4 text-muted-foreground" />
+                      <FormLabel className="text-sm font-medium text-foreground leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                        Categories
+                        <span className="text-xs text-muted-foreground ml-1 font-normal">
+                          (optional)
+                        </span>
+                      </FormLabel>
+                    </div>
+                    <FormControl>
+                      <CategorySelector
+                        selectedCategoriesIds={field.value}
+                        onSelect={(categoryIds) => {
+                          field.onChange(categoryIds);
                         }}
                       />
                     </FormControl>

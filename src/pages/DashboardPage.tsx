@@ -8,7 +8,11 @@ import { RecentTransactions } from "@/components/dashboard/RecentTransactions";
 import { QuickActions } from "@/components/dashboard/QuickActions";
 import { CategoryBreakdown } from "@/components/dashboard/CategoryBreakdown";
 import { containerVariants } from "@/components/dashboard/variants";
-import { Expense, Income } from "@expenseai/expenseai-shared";
+import {
+  BaseTransactionParams,
+  Expense,
+  Income,
+} from "@expenseai/expenseai-shared";
 
 import { DashboardTransaction } from "@/types/Dashboard.type";
 
@@ -19,6 +23,12 @@ const DashboardPage = () => {
   // getMonth() returns 0–11 (0 = January, 11 = December)
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
 
+  const currentYear = new Date().getFullYear();
+  const params = {
+    startDate: `${currentYear}-${selectedMonth + 1}-01`,
+    endDate: `${currentYear}-${selectedMonth + 1}-31`,
+  };
+
   console.log("selectedMonth ------>", selectedMonth);
 
   // Fetch expenses
@@ -27,8 +37,11 @@ const DashboardPage = () => {
     isLoading: expensesLoading,
     error: expensesError,
   } = useQuery({
-    queryKey: ["expenses"],
-    queryFn: getExpenseFn,
+    queryKey: ["expenses", params],
+    queryFn: ({ queryKey }) => {
+      const [, params] = queryKey;
+      return getExpenseFn(params as BaseTransactionParams);
+    },
   });
 
   // Fetch incomes
@@ -37,9 +50,14 @@ const DashboardPage = () => {
     isLoading: incomesLoading,
     error: incomesError,
   } = useQuery({
-    queryKey: ["incomes"],
-    queryFn: getIncomeFn,
+    queryKey: ["incomes", params],
+    queryFn: ({ queryKey }) => {
+      const [, params] = queryKey;
+      return getIncomeFn(params as BaseTransactionParams);
+    },
   });
+
+  console.log("expensesData ------>", expensesData);
 
   // Combine and format transactions
   const formatTransactions = (): DashboardTransaction[] => {
@@ -57,9 +75,9 @@ const DashboardPage = () => {
       type: "income" as const,
     }));
 
-    const dashboardTransaction = [...incomes, ...expenses]
-      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-      .slice(0, 10); // Get latest 10 transactions
+    const dashboardTransaction = [...incomes, ...expenses].sort(
+      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+    );
 
     return dashboardTransaction;
   };
