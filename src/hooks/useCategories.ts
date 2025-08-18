@@ -59,7 +59,7 @@ export const useCategories = () => {
         const newCategory = await createCategoryMutation.mutateAsync({
           name,
         });
-        return newCategory;
+        return newCategory?.data?.category;
       } catch (error) {
         console.error("Error creating category:", error);
         return null;
