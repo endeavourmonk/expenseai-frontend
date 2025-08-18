@@ -44,7 +44,7 @@ import { motion } from "framer-motion";
 import { buttonVariants } from "../dashboard/variants";
 import { createExpenseFn } from "@/lib/apis/expense.api";
 import { createIncomeFn } from "@/lib/apis/income.api";
-import { CategorySelector } from "./CategorySelector";
+import { CategorySelector } from "./category/CategorySelector";
 
 export const TransactionFormSchema = z.object({
   transactionType: z.enum(["expense", "income"]),
