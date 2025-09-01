@@ -1,9 +1,9 @@
 import { X } from "lucide-react";
 import { Badge } from "../../ui/badge";
-import { Category } from "@expenseai/expenseai-shared";
+import { CategoryApiSchema } from "@expenseai/expenseai-shared";
 
 interface SelectedCategoriesProps {
-  categories: Category[];
+  categories: CategoryApiSchema[];
   onRemoveCategory: (categoryId: string) => void;
 }
 

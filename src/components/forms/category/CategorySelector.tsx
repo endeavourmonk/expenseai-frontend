@@ -1,4 +1,4 @@
-import { Category } from "@expenseai/expenseai-shared";
+import { CategoryApiSchema } from "@expenseai/expenseai-shared";
 import { useCategories } from "@/hooks/useCategories";
 import { CategorySearchInput } from "./CategorySearchInput";
 
@@ -25,7 +25,9 @@ export const CategorySelector: React.FC<CategorySelectorProps> = ({
 
   console.log("searchResults ------->", searchResults);
   const [showResults, setShowResults] = useState(false);
-  const [selectedCategories, setSelectedCategories] = useState<Category[]>([]);
+  const [selectedCategories, setSelectedCategories] = useState<
+    CategoryApiSchema[]
+  >([]);
 
   const handleSearch = (query: string) => {
     searchCategoriesByName(query);
@@ -47,9 +49,7 @@ export const CategorySelector: React.FC<CategorySelectorProps> = ({
       updatedIds = [...currentIds, categoryId];
 
       // Find the category object from search results and add to selected categories
-      const categoryToAdd = searchResults.find(
-        (cat: Category) => cat.id === categoryId
-      );
+      const categoryToAdd = searchResults.find((cat) => cat.id === categoryId);
       if (categoryToAdd)
         setSelectedCategories((prev) => [...prev, categoryToAdd]);
     }
