@@ -6,6 +6,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { monthNames } from "@/lib/constants";
 import { Filter } from "lucide-react";
 
 export interface MonthFilterProps {
@@ -13,21 +14,6 @@ export interface MonthFilterProps {
   selectedMonth: number;
   onMonthChange: (month: number) => void;
 }
-
-const labels = [
-  "January",
-  "February",
-  "March",
-  "April",
-  "May",
-  "June",
-  "July",
-  "August",
-  "September",
-  "October",
-  "November",
-  "December",
-];
 
 export const MonthFilter: React.FC<MonthFilterProps> = React.memo(
   ({ selectedMonth, onMonthChange }) => {
@@ -41,11 +27,11 @@ export const MonthFilter: React.FC<MonthFilterProps> = React.memo(
       >
         <SelectTrigger className="cursor-pointer w-[180px]">
           <Filter className="mr-2 h-4 w-4" />
-          <SelectValue>{labels[selectedMonth]}</SelectValue>
+          <SelectValue>{monthNames[selectedMonth]}</SelectValue>
         </SelectTrigger>
 
         <SelectContent>
-          {labels.map((label, index) => (
+          {monthNames.map((label, index) => (
             <SelectItem key={index} value={String(index)}>
               {label}
             </SelectItem>
