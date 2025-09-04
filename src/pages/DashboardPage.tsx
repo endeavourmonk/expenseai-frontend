@@ -4,9 +4,9 @@ import { useQuery } from "@tanstack/react-query";
 
 import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
 import { DashboardStats } from "@/components/dashboard/DashboardStats";
-import { RecentTransactions } from "@/components/dashboard/RecentTransactions";
+import { TransactionList } from "@/components/dashboard/TransactionList";
 import { QuickActions } from "@/components/dashboard/QuickActions";
-import { CategoryBreakdown } from "@/components/dashboard/CategoryBreakdown";
+import { CategoryChartPieLabelList } from "@/components/dashboard/CategoryChartPieLabelList";
 import { containerVariants } from "@/components/dashboard/variants";
 import {
   BaseTransactionParams,
@@ -18,18 +18,19 @@ import { DashboardTransaction } from "@/types/Dashboard.type";
 
 import { getIncomeFn } from "@/lib/apis/income.api";
 import { getExpenseFn } from "@/lib/apis/expense.api";
+import { TransactionListShimmer } from "@/components/dashboard/TransactionListShimmer";
+import { CategoryChartPieShimmer } from "@/components/dashboard/CategoryChartPieShimmer";
 
 const DashboardPage = () => {
   // getMonth() returns 0–11 (0 = January, 11 = December)
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
 
-  const currentYear = new Date().getFullYear();
+  // const currentYear = new Date().getFullYear();
   const params = {
-    startDate: `${currentYear}-${selectedMonth + 1}-01`,
-    endDate: `${currentYear}-${selectedMonth + 1}-31`,
+    startDate: `${selectedYear}-${selectedMonth + 1}-01`,
+    endDate: `${selectedYear}-${selectedMonth + 1}-31`,
   };
-
-  console.log("selectedMonth ------>", selectedMonth);
 
   // Fetch expenses
   const {
@@ -56,8 +57,6 @@ const DashboardPage = () => {
       return getIncomeFn(params as BaseTransactionParams);
     },
   });
-
-  console.log("expensesData ------>", expensesData);
 
   // Combine and format transactions
   const formatTransactions = (): DashboardTransaction[] => {
@@ -93,6 +92,8 @@ const DashboardPage = () => {
         <DashboardHeader
           selectedMonth={selectedMonth}
           onMonthChange={setSelectedMonth}
+          selectedYear={selectedYear}
+          onYearChange={setSelectedYear}
         />
 
         <DashboardStats />
@@ -105,13 +106,40 @@ const DashboardPage = () => {
         >
           {/* Recent Transactions */}
           <div className="lg:col-span-2 space-y-6">
-            <RecentTransactions transactions={formatTransactions()} />
+            {incomesLoading || expensesLoading ? (
+              <TransactionListShimmer />
+            ) : (
+              <TransactionList
+                transactions={formatTransactions()}
+                month={selectedMonth}
+              />
+            )}
           </div>
 
-          <div className="space-y-6">
-            <QuickActions />
-            <CategoryBreakdown />
-          </div>
+          {/* <QuickActions /> */}
+          {incomesLoading || expensesLoading ? (
+            <div className="space-y-6">
+              <CategoryChartPieShimmer
+                isExpenses={true}
+                monthIndex={selectedMonth}
+              />
+              <CategoryChartPieShimmer
+                isExpenses={false}
+                monthIndex={selectedMonth}
+              />
+            </div>
+          ) : (
+            <div className="space-y-6">
+              <CategoryChartPieLabelList
+                transactions={expensesData}
+                monthIndex={selectedMonth}
+              />
+              <CategoryChartPieLabelList
+                transactions={incomesData}
+                monthIndex={selectedMonth}
+              />
+            </div>
+          )}
         </motion.div>
       </div>
     </motion.div>
