@@ -1,5 +1,5 @@
 import { TrendingUp, TrendingDown } from "lucide-react";
-import { LabelList, Pie, PieChart, ResponsiveContainer, Cell } from "recharts";
+import { Pie, PieChart, ResponsiveContainer, Cell } from "recharts";
 
 import {
   Card,
@@ -12,6 +12,8 @@ import {
 import {
   ChartConfig,
   ChartContainer,
+  ChartLegend,
+  ChartLegendContent,
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
@@ -20,6 +22,7 @@ import {
   IncomeApiResponse,
 } from "@expenseai/expenseai-shared";
 import { useAuthStore } from "@/stores/authStore";
+import { monthNames } from "@/lib/constants";
 
 // Types & type guards
 type Data = ExpensesApiResponse["data"] | IncomeApiResponse["data"];
@@ -51,28 +54,6 @@ const formatNumberIN = new Intl.NumberFormat("en-IN", {
 const formatCurrency = (symbol: string | undefined, amount: number) =>
   `${symbol ?? "₹"}${formatNumberIN.format(amount)}`;
 
-const monthLabelFromDates = (dates: (Date | string)[]) => {
-  const ds = dates.map((d) => new Date(d));
-  if (!ds.length || ds.some((d) => isNaN(+d))) return "This period";
-  const min = new Date(Math.min(...ds.map((d) => +d)));
-  const max = new Date(Math.max(...ds.map((d) => +d)));
-  const sameMonth =
-    min.getUTCFullYear() === max.getUTCFullYear() &&
-    min.getUTCMonth() === max.getUTCMonth();
-  const full = new Intl.DateTimeFormat("en-IN", {
-    month: "long",
-    year: "numeric",
-    timeZone: "UTC",
-  });
-  if (sameMonth) return full.format(min);
-  const short = new Intl.DateTimeFormat("en-IN", {
-    month: "short",
-    year: "numeric",
-    timeZone: "UTC",
-  });
-  return `${short.format(min)}–${short.format(max)}`;
-};
-
 // Build ChartConfig dynamically from category rows.
 // Also returns Recharts-ready rows with CSS var fills.
 function buildChartConfig(
@@ -93,7 +74,6 @@ function buildChartConfig(
 
   const rows = raw.map((d, i) => {
     const key = toKey(d.name) || `cat-${i}`;
-    // Use API hex if provided; otherwise cycle palette
     const baseColor = d.fill?.startsWith("#")
       ? d.fill
       : palette[i % palette.length];
@@ -101,13 +81,16 @@ function buildChartConfig(
     return { ...d, key, fill: `var(--color-${key})` };
   });
 
+  console.log("rows -----------", rows);
   return { cfg, rows };
 }
 
 export function CategoryChartPieLabelList({
   transactions,
+  monthIndex,
 }: {
   transactions: ExpensesApiResponse | IncomeApiResponse | null | undefined;
+  monthIndex: number;
 }) {
   if (!transactions || !transactions.data) return <div>Loading data...</div>;
 
@@ -117,8 +100,6 @@ export function CategoryChartPieLabelList({
     : isIncomesData(transactions.data)
       ? transactions.data.incomes
       : [];
-
-  if (!items.length) return <div>No data available</div>;
 
   // Aggregate by category
   const totals = new Map<string, { amount: number; color?: string }>();
@@ -150,29 +131,49 @@ export function CategoryChartPieLabelList({
   );
 
   const isExpenses = isExpensesData(transactions.data);
-  const dates = items.map((i) => i.date);
-  const monthLabel = monthLabelFromDates(dates);
+  const monthLabel = monthNames[monthIndex];
   const title = isExpenses
     ? `Where your money went — ${monthLabel}`
     : `Where your money came from — ${monthLabel}`;
   const subTitle = `${items.length} ${isExpenses ? "transactions" : "payments"}`;
 
   const total = chartData.reduce((s, d) => s + d.value, 0);
-  const top = [...chartData].sort((a, b) => b.value - a.value)[0];
-  const topPct = total ? (top.value / total) * 100 : 0;
-
-  const currencySymbol =
-    useAuthStore.getState()?.user?.defaultCurrency?.symbol ?? "₹";
-  const topLine = `Top: ${top.name} — ${formatCurrency(currencySymbol, top.value)} (${topPct.toFixed(1)}%)`;
-  const totalLine = isExpenses
-    ? `Total spent: ${formatCurrency(currencySymbol, total)}`
-    : `Total received: ${formatCurrency(currencySymbol, total)}`;
+  const hasData = chartData.length > 0 && total > 0;
 
   // Build dynamic chart config + rows with CSS var fills
   const { cfg: dynamicConfig, rows: pieData } = buildChartConfig(
-    chartData,
+    hasData ? chartData : [],
     isExpenses
   );
+
+  // Empty-state pie (one neutral slice). Uses a generic token that should exist in your theme.
+  const emptyPieData = [
+    {
+      name: "No data",
+      key: "no-data",
+      value: 1,
+      // neutral color token; fallback to a subtle gray if your theme doesn't define --muted
+      fill: "var(--muted, hsl(0 0% 90%))",
+    },
+  ] as const;
+
+  const currencySymbol =
+    useAuthStore.getState()?.user?.defaultCurrency?.symbol ?? "₹";
+
+  const topLine = hasData
+    ? (() => {
+        const top = [...chartData].sort((a, b) => b.value - a.value)[0];
+        const topPct = (top.value / total) * 100;
+        return `Top: ${top.name} — ${formatCurrency(
+          currencySymbol,
+          top.value
+        )} (${topPct.toFixed(1)}%)`;
+      })()
+    : "Top: —";
+
+  const totalLine = isExpenses
+    ? `Total spent: ${formatCurrency(currencySymbol, total)}`
+    : `Total received: ${formatCurrency(currencySymbol, total)}`;
 
   return (
     <Card className="flex flex-col">
@@ -192,34 +193,64 @@ export function CategoryChartPieLabelList({
 
       <CardContent className="flex-1 pb-0">
         <ChartContainer
-          config={dynamicConfig}
+          // When empty, inject a config entry so legend (if shown) has a color,
+          // though we hide legend in empty state to avoid confusion.
+          config={
+            hasData
+              ? dynamicConfig
+              : ({
+                  value: {
+                    label: isExpenses ? "Spent" : "Received",
+                  },
+                  "no-data": {
+                    label: "No data",
+                    color: "var(--muted, hsl(0 0% 90%))",
+                  },
+                } as ChartConfig)
+          }
           className="[&_.recharts-text]:fill-background mx-auto aspect-square max-h-[260px] w-full"
         >
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
-              {/* Use your UI Kit tooltip for consistent theming */}
               <ChartTooltip
-                content={<ChartTooltipContent nameKey="name" hideLabel />}
+                content={
+                  <ChartTooltipContent
+                    nameKey="name"
+                    hideLabel
+                    formatter={(value, name) => [
+                      name,
+                      " ",
+                      formatCurrency(currencySymbol, Number(value)),
+                    ]}
+                  />
+                }
               />
+
+              {/* Hide legend in empty state to avoid a lone "No data" pill */}
+              {hasData && (
+                <ChartLegend
+                  content={<ChartLegendContent nameKey="key" />}
+                  layout="horizontal"
+                  verticalAlign="bottom"
+                  align="center"
+                  className="flex-wrap gap-2 *:basis-1/4 *:justify-center"
+                />
+              )}
+
               <Pie
-                data={pieData}
+                data={hasData ? pieData : (emptyPieData as any)}
                 dataKey="value"
                 nameKey="name"
                 outerRadius="80%"
-                isAnimationActive
+                isAnimationActive={hasData}
               >
-                {/* Labels show category names */}
-                <LabelList
-                  dataKey="name"
-                  className="fill-background"
-                  stroke="none"
-                  fontSize={12}
-                  formatter={(value: string) => value}
-                />
-                {/* Cells ensure slice colors match our dynamic CSS vars */}
-                {pieData.map((d, i) => (
-                  <Cell key={i} fill={d.fill} />
+                {(hasData ? pieData : emptyPieData).map((d, i) => (
+                  <Cell key={i} fill={d.fill as string} />
                 ))}
+                {/* show labels only when there’s real data */}
+                {/* {hasData && (
+                  <LabelList dataKey="name" position="outside" offset={6} />
+                )} */}
               </Pie>
             </PieChart>
           </ResponsiveContainer>
