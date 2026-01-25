@@ -21,18 +21,9 @@ export const DashboardHeader = ({
   selectedYear,
   onYearChange,
 }: DashboardHeaderProps) => (
-  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+  <div className="flex flex-col lg:flex-row sm:items-center sm:justify-between gap-4">
     {/* Header Lines */}
     <div>
-      {/* <motion.h1
-        className="text-3xl font-bold text-gray-900 dark:text-white"
-        initial={{ opacity: 0, x: -20 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ delay: 0.2, type: "spring" }}
-      >
-        Dashboard for {monthNames[selectedMonth]}, {selectedYear}
-      </motion.h1> */}
-
       <motion.h1
         className="text-3xl font-bold text-gray-900 dark:text-white relative inline-block"
         initial={{ opacity: 0, x: -20 }}
@@ -102,9 +93,8 @@ export const DashboardHeader = ({
         startYear={2000}
         onYearChange={onYearChange}
       />
-
-      {/* Transaction Form */}
-      <TransactionForm />
     </motion.div>
+    {/* Transaction Form */}
+    <TransactionForm />
   </div>
 );
