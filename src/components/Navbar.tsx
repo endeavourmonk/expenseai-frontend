@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 import { ModeToggle } from "./mode-toggle";
 import { Menu, X } from "lucide-react";
 
-export function Navbar() {
+export const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [lastScrollY, setLastScrollY] = useState(0);
   const [isVisible, setIsVisible] = useState(true);
@@ -58,7 +58,7 @@ export function Navbar() {
   return (
     <motion.nav
       className={cn(
-        "fixed w-full top-0 z-50 transition-all duration-300",
+        "fixed w-screen top-0 z-50 transition-all duration-300",
         isScrolled
           ? "h-16 bg-background/95 backdrop-blur-md shadow-sm"
           : "h-20 bg-transparent backdrop-blur-sm"
@@ -199,4 +199,4 @@ export function Navbar() {
       </AnimatePresence>
     </motion.nav>
   );
-}
+};

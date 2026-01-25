@@ -1,4 +1,9 @@
-import { createRootRoute, Outlet, redirect } from "@tanstack/react-router";
+import {
+  createRootRoute,
+  Outlet,
+  redirect,
+  useRouterState,
+} from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 
 import { ThemeProvider } from "../components/theme-provider";
@@ -10,10 +15,14 @@ import { queryClient } from "@/lib/tanstackQuery";
 import { getUserFn } from "@/lib/apis/user";
 
 const RootComponent = () => {
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const hideNavbar = pathname === "/signin";
+
   return (
     <ThemeProvider>
       <div className="flex flex-col min-h-screen w-full max-w-[100vw] overflow-x-hidden">
-        <Navbar />
+        {!hideNavbar && <Navbar />}
+
         <Toaster
           position="top-center"
           richColors={true}
@@ -26,7 +35,8 @@ const RootComponent = () => {
             // you can also override info, warning, loading, close…
           }}
         />
-        <div className="pt-20">
+
+        <div className={hideNavbar ? "" : "pt-20"}>
           <Outlet />
         </div>
       </div>
@@ -50,7 +60,7 @@ export const Route = createRootRoute({
       } catch (error) {
         console.log("error", error);
         useAuthStore.getState().clearUser();
-        if (location.pathname !== "/signin") {
+        if (location.pathname !== "/signin" && location.pathname != "/") {
           throw redirect({
             to: "/signin",
             search: { redirect: location.pathname },

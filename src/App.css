@@ -8,7 +8,6 @@
 
 html,
 body {
-  scrollbar-gutter: stable;
   scrollbar-width: thin;
   height: 100%;
   margin: 0;

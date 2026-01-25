@@ -15,7 +15,7 @@ interface DatePickerProps {
   onSelect: (date: Date | undefined) => void;
 }
 
-export function DatePicker({ label, value, onSelect }: DatePickerProps) {
+export const DatePicker = ({ label, value, onSelect }: DatePickerProps) => {
   const [open, setOpen] = React.useState(false);
 
   return (
@@ -54,4 +54,4 @@ export function DatePicker({ label, value, onSelect }: DatePickerProps) {
       </Popover>
     </div>
   );
-}
+};

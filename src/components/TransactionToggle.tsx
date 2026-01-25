@@ -3,10 +3,10 @@ interface TransactionToggleProps {
   onValueChange: (value: string) => void;
 }
 
-export default function TransactionToggle({
+export const TransactionToggle = ({
   value,
   onValueChange,
-}: TransactionToggleProps) {
+}: TransactionToggleProps) => {
   return (
     <div className="relative flex rounded-lg border border-input bg-background p-1">
       {/* Animated background indicator */}
@@ -40,4 +40,4 @@ export default function TransactionToggle({
       </button>
     </div>
   );
-}
+};
